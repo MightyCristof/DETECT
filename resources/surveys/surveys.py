@@ -45,32 +45,32 @@ sdss = {
 lsst = {
     'filters': ['u', 'g', 'r', 'i', 'z', 'y'],
     'file_paths': {
-        'u': '../resources/surveys/lsst/01_u.dat',
-        'g': '../resources/surveys/lsst/02_g.dat',
-        'r': '../resources/surveys/lsst/03_r.dat',
-        'i': '../resources/surveys/lsst/04_i.dat',
-        'z': '../resources/surveys/lsst/05_z.dat',
-        'y': '../resources/surveys/lsst/06_y.dat'
+        'u': '../resources/surveys/lsst/total_u.dat',
+        'g': '../resources/surveys/lsst/total_g.dat',
+        'r': '../resources/surveys/lsst/total_r.dat',
+        'i': '../resources/surveys/lsst/total_i.dat',
+        'z': '../resources/surveys/lsst/total_z.dat',
+        'y': '../resources/surveys/lsst/total_y.dat'
     },
     'zero_points': {
-        'u': None,
-        'g': None,
-        'r': None,
-        'i': None,
-        'z': None,
-        'y': None
+        'u': 3631.0,
+        'g': 3631.0,
+        'r': 3631.0,
+        'i': 3631.0,
+        'z': 3631.0,
+        'y': 3631.0,
     },
     # Effective wavelength per filter
     'wave_eff': {
-        'u': None,
-        'g': None,
-        'r': None,
-        'i': None,
-        'z': None,
-        'y': None
+        'u': 367.1,
+        'g': 482.7,
+        'r': 622.3,
+        'i': 754.6,
+        'z': 869.1,
+        'y': 971.2
     },
     # Wavelength conversion factor to meters
-    'wave_conversion': None,
+    'wave_conversion': 1.0e-9,
     'depths' : {
         # Single visit depths
         'single': {'u': 23.8,
@@ -100,3 +100,4 @@ lsst = {
     },
 }
 # Values from https://www.lsst.org/scientists/keynumbers
+# Throughput from https://github.com/lsst/throughputs/tree/main/baseline
