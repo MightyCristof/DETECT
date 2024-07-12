@@ -2,7 +2,7 @@
 DETection and Evaluation of Cosmic Targets (DETECT)
 --------
 
-Simulating detection and selection of targets using simulated data. Current implementation includes AGNs and host galaxies.
+Explore detection and selection of targets using simulated data. Current implementation includes AGNs and host galaxies.
 
 Installation
 ------------
