@@ -2,7 +2,7 @@
 DETection and Evaluation of Cosmic Targets (DETECT)
 --------
 
-Welcome to DETECT, a project dedicated to simulating and evaluating cosmic targets using simulated data. Currently implementation includes AGNs and host galaxies.
+Simulating and detectcion and selection of targets using simulated data. Current implementation includes AGNs and host galaxies.
 
 Installation
 ------------
