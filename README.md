@@ -2,7 +2,7 @@
 DETection and Evaluation of Cosmic Targets (DETECT)
 --------
 
-Simulating and detectcion and selection of targets using simulated data. Current implementation includes AGNs and host galaxies.
+Simulating detection and selection of targets using simulated data. Current implementation includes AGNs and host galaxies.
 
 Installation
 ------------
@@ -13,6 +13,8 @@ Documentation
 -------------
 
 Coming soon!
+
+In short: Set choices in parameters.py file and run main.py.
 
 Example
 -------
