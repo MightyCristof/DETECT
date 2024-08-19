@@ -1,5 +1,5 @@
 
-DETection and Evaluation of Cosmic Targets (DETECT)
+Detection and Evaluation of Cosmic Targets (DETECT)
 --------
 
 Explore detection and selection of targets using simulated data. Current implementation includes AGNs and host galaxies.
