@@ -5,7 +5,7 @@ H0 = 70  # Hubble constant
 Om0 = 0.3  # Matter density parameter
 
 # Choice of survey/instrument
-instrument = 'SDSS'
+instrument = 'LSST'
 
 # Choice of SED templates
 sed_selection = {
@@ -25,7 +25,7 @@ ext_selection = ['mod_calzetti']
 qlf_selection = {
     'prescription': 'Shen2020QLF',
     'redshift_range': [0.001, 7.001, 0.001],
-    'luminosity_range': [40.0, 50.0, 0.001],
+    'luminosity_range': [42.0, 48.0, 0.001],
 }
 
 # Choice of AGN selection criteria

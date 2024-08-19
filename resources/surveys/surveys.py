@@ -45,12 +45,12 @@ sdss = {
 lsst = {
     'filters': ['u', 'g', 'r', 'i', 'z', 'y'],
     'file_paths': {
-        'u': '../resources/surveys/lsst/total_u.dat',
-        'g': '../resources/surveys/lsst/total_g.dat',
-        'r': '../resources/surveys/lsst/total_r.dat',
-        'i': '../resources/surveys/lsst/total_i.dat',
-        'z': '../resources/surveys/lsst/total_z.dat',
-        'y': '../resources/surveys/lsst/total_y.dat'
+        'u': 'resources/surveys/lsst/total_u.dat',
+        'g': 'resources/surveys/lsst/total_g.dat',
+        'r': 'resources/surveys/lsst/total_r.dat',
+        'i': 'resources/surveys/lsst/total_i.dat',
+        'z': 'resources/surveys/lsst/total_z.dat',
+        'y': 'resources/surveys/lsst/total_y.dat'
     },
     'zero_points': {
         'u': 3631.0,
@@ -90,13 +90,13 @@ lsst = {
         },
         # Deep drilling field depths
         # SINGLE VALUES HERE AS PLACEHOLDERS
-        'ddf': {'u': 23.8,
-                'g': 24.5,
-                'r': 24.03,
-                'i': 23.41,
-                'z': 22.74,
-                'y': 22.96
-        }
+        #'ddf': {'u': 23.8,
+        #        'g': 24.5,
+        #        'r': 24.03,
+        #        'i': 23.41,
+        #        'z': 22.74,
+        #        'y': 22.96
+        #}
     },
 }
 # Values from https://www.lsst.org/scientists/keynumbers

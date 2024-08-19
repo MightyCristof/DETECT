@@ -126,11 +126,14 @@ class QuasarLuminosityFunction:
             return self.log_phi[:, index_z]
         else:
             # Check if luminosity is within the bounds
-            if lum < self.luminosity.min() or lum > self.luminosity.max():
+            if np.any(lum < self.luminosity.min()) or np.any(lum > self.luminosity.max()):
                 raise ValueError(f"Luminosity {lum} is out of bounds [{self.luminosity.min():.3f}, {self.luminosity.max():.3f}]")
             # Find closest indices
-            index_lum = np.abs(self.luminosity - lum).argmin()
-            index_z = np.abs(self.redshift - z).argmin()
+            #index_lum = np.abs(self.luminosity - lum).argmin()
+            index_lum = np.array([np.abs(self.luminosity - li).argmin() for li in lum])
+            #index_z = np.abs(self.redshift - z).argmin()
+            #index_z = np.array([np.abs(self.redshift - zi).argmin() for zi in z])
+            index_z = np.array([np.abs(self.redshift - zi).argmin() for zi in np.atleast_1d(z)])
             return self.log_phi[index_lum, index_z]
     
     def sample_luminosity(self, z, ndraw=1):

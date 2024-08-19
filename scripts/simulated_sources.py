@@ -10,10 +10,10 @@ import pdb
 #
 #########################################
 class ActiveGalacticNuclei:
-    def __init__(self, rest_frequency, dluminosity, luminosity=None, ebv=0, galaxy=None):
+    def __init__(self, redshift, rest_frequency, dluminosity, luminosity=None, ebv=0, galaxy=None):
         self.luminosity = self.set_bolometric_luminosity(luminosity)
         self.ebv = ebv
-        self.eddington_ratio = self.assign_eddington_ratio(method="Suh+2015")
+        self.eddington_ratio = self.assign_eddington_ratio(redshift)
         self.mass = self.calculate_bh_mass()
         self.eddington_limit = self.calculate_eddington_limit()
         self.norm = self.normalize_sed(rest_frequency, dluminosity)
@@ -26,9 +26,24 @@ class ActiveGalacticNuclei:
         else:
             raise NotImplementedError("Galaxy-to-AGN properties not yet implemented. Please define AGN bolometric luminosity.")
 
-    def assign_eddington_ratio(self, method="Suh+2015"):
-        # Suh+2015
-        if method == "Suh+2015":
+    def assign_eddington_ratio(self, z, method="Wang+2017"):
+        if method == "Wang+2017":
+            lambda_edd = 10**np.arange(-3.0, 0.5, 0.01)
+            # Draw Eddington Ratio from PDF, Equation 9, parameters from Table 3
+            def calculate_log_p_edd(z):
+                big_a = 10**np.random.normal(loc=-2.5, scale=0.2)
+                alpha = np.random.normal(loc=0.38, scale=0.05)
+                gamma = np.random.normal(loc=1.8, scale=0.3)
+                return np.log10(big_a * (lambda_edd)**(-1*alpha) * (1 + z)**gamma)
+
+            log_p_edd = calculate_log_p_edd(z)
+            edd_shift = log_p_edd - np.min(log_p_edd)
+            edd_pdf = edd_shift / np.sum(edd_shift)
+            edd_cdf = np.cumsum(edd_pdf)
+            random_draw = np.random.rand()
+            samp = np.interp(random_draw, edd_cdf, lambda_edd)
+            return samp
+        elif method == "Suh+2015":
             # Generate bounded normal distribution
             def generate_bounded_normal(size, mean=-0.6, stddev=0.8, bounds=[-3.0,0.0]):
                 data = np.random.normal(loc=mean, scale=stddev, size=size)
@@ -110,7 +125,7 @@ class Galaxy:
 
     def scale_mass_ratio(self, z):
         # Correct for AGN mass overdensity 
-        # Pucci+2024 Equation 2
+        # Pacucci & Loeb 2024 Equation 2
         # ...which follows Barkana & Loeb (2001)
         # ...with definitions from Bryan & Norman 1998)
         # Ωzm === Critial matter density at redshift. Implemented in astropy.cosmology.FlatLambdaCDM
@@ -222,7 +237,8 @@ class Source:
         self.wave = self.set_frame_data('wavelength')
         self.freq = self.set_frame_data('frequency')
         # Assign dynamically in the future
-        self.agn = ActiveGalacticNuclei(self.freq['rest'],
+        self.agn = ActiveGalacticNuclei(self.z,
+                                        self.freq['rest'],
                                         self.dluminosity,
                                         luminosity=agn_luminosity,
                                         ebv=ebv)
@@ -298,7 +314,8 @@ class Source:
         bp.convert_flx_to_mag(self)
     
     def initialize_detections(self):
-        return {key: False for key in bp.get_filters()}
+        # Initialize filter array for all survey depth modes
+        return {mode: {filt: False for filt in bp.get_filters()} for mode in bp.get_depths()}
 
     def trigger_detections(self):
         # Perform calculations and update self.photometry

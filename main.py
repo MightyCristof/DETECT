@@ -14,9 +14,9 @@ import pdb
 def main():
     #print(f"Using cosmology with H0={params.H0} and Om0={params.Om0}")
     
-    nobj = 100000
+    nobj = 10000
     z = np.arange(1., 8.0, 1.0)
-    det = np.zeros((5, len(z), nobj), dtype=bool)  
+    det = np.zeros((len(bp.filters), len(z), nobj), dtype=bool)  
     sel = np.zeros((len(z), nobj), dtype=bool)
 
     selection = AGNSelection(criteria='Analytic')

@@ -35,25 +35,24 @@ def plot_sed(src, phot=None):
     #plt.xlim(1e-10,1e-2)
     #plt.ylim(1e-30, 1e-1)
     plt.xlabel(r'Observed Wavelength [$\mu$m]')
-    plt.ylabel(r'$\nu F_{\nu}$ [erg/s/cm$^2$]')
+    plt.ylabel(r'$\nu F_{\nu}$ [erg s$^{-1}$ cm$^{-2}$]')
     plt.legend()
     plt.grid(True)
     plt.show()
 
 
 # Plot Source color-color
-def plot_cc(colors, phot=None):
-    plt.figure(figsize=(10, 6))
-
-    color1 = colors[0,:]
-    color2 = colors[1,:]
+def plot_cc(mags, phot=None):
+    color1 = mags[0,:]-mags[1,:]
+    color2 = mags[1,:]-mags[2,:]
     cut1 = 0.9
     cut2 = 0.4
 
+    plt.figure(figsize=(10, 6))
     # Plot data points
-    plt.scatter(color1, color2, s=100, c='black', alpha=0.5)
-    plt.axvline(x=cut1, color='red', linestyle='--', linewidth=2, label=f'cut1 = {cut1}')
-    plt.axhline(y=cut2, color='blue', linestyle='--', linewidth=2, label=f'cut2 = {cut2}')
+    plt.scatter(color1[0,:], color2[0,:], s=100, c='black', alpha=0.5)
+    plt.axvline(x=cut1, color='red', linestyle='--', linewidth=2)
+    plt.axhline(y=cut2, color='blue', linestyle='--', linewidth=2)
 
     # Calculate percentiles to dynamically set limits
     x_min, x_max = np.percentile(color1, [5, 95])

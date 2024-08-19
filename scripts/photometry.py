@@ -274,13 +274,19 @@ class Bandpass:
         for filter, bandpass in filters_to_convert.items():
             converted_magnitudes[filter] = -2.5 * np.log10(object.photometry['flux'][filter] / (bandpass.zero_pt * 1e-23)) # Convert zero point from Jy to erg/s/cm2/Hz
 
-    def compare_survey_depths(self, object, mode='single', filter=None):
-        # Check magnitude brighter than flux limit with the specified bandpass filter or with all filters if filter is None
-        filters_to_compare = self.depths[mode] if filter is None else {filter: self.depths[mode][filter]}
+    def compare_survey_depths(self, object, filter=None):
         detected_bands = object.detect
+        # Check magnitude brighter than flux limit with the specified bandpass filter or with all filters if filter is None
+        if filter is None:
+            filters_to_compare = self.depths
+        else:
+            filters_to_compare = {}
+            for mode in self.depths:
+                filters_to_compare[mode] = {filter: self.depths[mode][filter]}
 
-        for filter, mag_depth in filters_to_compare.items():
-            detected_bands[filter] = object.photometry['mag'][filter] <= mag_depth
+        for mode, filters in filters_to_compare.items():
+            for filt, mag_depth in filters.items():
+                detected_bands[mode][filt] = object.photometry['mag'][filt] <= mag_depth
 
     def get_filters(self):
         return list(self.filters.keys())
@@ -293,6 +299,9 @@ class Bandpass:
 
     def get_zero_points(self):
         return np.array([bandpass.zero_pt for bandpass in self.filters.values()])
+    
+    def get_depths(self):
+        return list(self.depths.keys())
     
 
 #########################################
