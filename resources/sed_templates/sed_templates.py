@@ -2,9 +2,9 @@
 
 
 # Full range of SED component...
-component_keys = {
-    'frame': ['wavelength', 'frequency'],
-    'flux': ['agn', 'galaxy', 'star', 'neo'],
+category_keys = {
+    'domain': ['wavelength', 'frequency'],
+    'components': ['agn', 'galaxy', 'star', 'neo'],
 }
 
 
@@ -32,11 +32,11 @@ assef = {
         }
     },
     # Specify SED components by type
-    'frame': {
+    'domain': {
         'wavelength': ['wave'],
         'frequency': None,
     },
-    'flux': {
+    'components': {
         'agn': ['agn', 'agn2'],
         'galaxy': ['ell', 'sfg', 'irr'],
         'star': None, 
@@ -79,11 +79,11 @@ kirkpatrick = {
         },
     },
     # Specify SED components by type
-    'frame': {
+    'domain': {
         'wavelength': ['wave'],
         'frequency': None,
     },
-    'flux': {
+    'components': {
         'agn': ['agn', 'agn2'],
         'galaxy': ['ell', 'sfg', 'irr'],
         'star': None, 

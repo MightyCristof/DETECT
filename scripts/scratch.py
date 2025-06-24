@@ -91,3 +91,96 @@ from scipy.stats import skewnorm
 
 
 
+
+
+
+    # Example flux limit of the survey
+    flux_limit = 1e-16 * u.erg / (u.cm**2 * u.s)
+
+    # Luminosity and redshift bins
+    lum_bins = np.logspace(43, 48, 20) * u.erg / u.s
+    z_bins = np.linspace(0.0, 7.0, 20)
+
+    # Catalog of sources (these would come from your simulation)
+    catalog = {
+        'luminosity': np.random.uniform(1e43, 1e48, 1000) * u.erg / u.s,
+        'redshift': np.random.uniform(0, 7, 1000)
+    }
+
+    # Initialize grid to hold counts
+    N_detected = np.zeros((len(lum_bins) - 1, len(z_bins) - 1))
+
+    # Loop through the luminosity and redshift bins
+    for L_idx in range(len(lum_bins) - 1):
+        Lmin = lum_bins[L_idx]
+        Lmax = lum_bins[L_idx + 1]
+
+        # Sources within the luminosity bin
+        in_lum_bin = (catalog['luminosity'] >= Lmin) & (catalog['luminosity'] < Lmax)
+        
+        for z_idx in range(len(z_bins) - 1):
+            zmin = z_bins[z_idx]
+            zmax = z_bins[z_idx + 1]
+
+            # Select the sources in this luminosity bin
+            sources = catalog['luminosity'][in_lum_bin]
+            
+            # Compute the max redshift for each source:
+            z_max = np.array([
+                z for z in np.linspace(zmin, zmax, 100)
+                if (L / (4 * np.pi * cosmo.luminosity_distance(z)**2)).to(u.erg / (u.cm**2 * u.s)) >= flux_limit
+            ])
+            
+            # Filter only those still detectable in the redshift range
+            detected_sources = (catalog['redshift'][in_lum_bin] >= zmin) & (catalog['redshift'][in_lum_bin] <= zmax)
+            
+            # Count the sources
+            N_detected[L_idx, z_idx] = np.sum(detected_sources)
+
+
+
+
+
+
+
+
+
+
+colors = ['violet','blue', 'green', 'lime green', 'goldenrod', 'red'] 
+shaded_regions = []
+
+for i, filt in enumerate(bp.filters):
+    start_idx = (np.where(bp.filters[filt].thru > 1e-3))[0][0]
+    end_idx = (np.where(bp.filters[filt].thru > 1e-3))[0][-1]
+    shaded_regions.append((start_idx, end_idx, colors[i % len(colors)]))
+
+
+
+
+
+
+
+
+
+
+
+
+
+fig, ax = plt.subplots()
+ax.scatter(data.z,data.mag_i)
+plt.show()
+
+
+fig, ax = plt.subplots()
+ax.scatter(data.z,data.mag_i)
+xlim, ylim = ax.get_xlim(), ax.get_ylim()
+buffer = 0.5
+xra, yra = xlim[1]-xlim[0], ylim[1]-ylim[0]
+ax.set_xlim(xlim[0]-xra*buffer,xlim[1]+xra*buffer)
+ax.set_ylim(ylim[0]-yra*buffer,ylim[1]+yra*buffer)
+plt.show()
+
+
+
+
+

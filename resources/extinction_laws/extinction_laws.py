@@ -15,11 +15,11 @@ mod_calzetti = {
         'file01': {'wave': 1e-10}
     },
     # Specify SED components by type to host extinction
-    'frame': {
+    'domain': {
         'wavelength': ['wave'],
         'frequency': None,
     },
-    'flux': {
+    'components': {
         'agn': ['agn', 'agn2'],
         'galaxy': None,
         'stellar': None, 
@@ -27,7 +27,7 @@ mod_calzetti = {
     },
 }
 
-carroll2023 = {
+gal_ext_placeholder = {
     # Path to extinction law files
     'file_paths': {
         'file01': 'resources/extinction_laws/Carroll2023.dat'
@@ -41,11 +41,11 @@ carroll2023 = {
         'file01': {'wave': 1e-10}
     },
     # Specify SED components by type to host extinction
-    'frame': {
+    'domain': {
         'wavelength': ['wave'],
         'frequency': None,
     },
-    'flux': {
+    'components': {
         'agn': None,
         'galaxy': ['ell', 'sfg', 'irr'],
         'stellar': None, 
