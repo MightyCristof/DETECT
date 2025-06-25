@@ -69,24 +69,26 @@ def main():
         # Then i can do this number counts. Also restricted in apparent mag? Not sure.
         olf = ObservedLuminosityFunction(qlf.log_luminosity,qlf.z,qlf.dluminosity,qlf.volume,qlf.dvolume,bp.flux_limits)
 
-        data = []
-        src = Source(1.5,agn_luminosity=45.0)
-        data.append(process_source(src))
-        data = pd.DataFrame(data)
+        live_test = False
+        if live_test:
+            data = []
+            src = Source(1.5,agn_luminosity=45.0)
+            data.append(process_source(src))
+            data = pd.DataFrame(data)
 
-        dat = data.iloc[0]
-        dat_sed = []                 
-        for comp in dat.components:
-            for template in sed.components[comp]:
-                key = f"{comp}_{template}_norm"
-                norm = dat[key]
-                sed_template = sed.components[comp][template]
-                dat_sed.append(norm * sed_template/(1+dat.z))
-        dat_sed = np.sum(np.stack(dat_sed),axis=0)
-        pdb.set_trace()
-        dat_wave = sed.domain['wavelength']['wave']
+            dat = data.iloc[0]
+            dat_sed = []                 
+            for comp in dat.components:
+                for template in sed.components[comp]:
+                    key = f"{comp}_{template}_norm"
+                    norm = dat[key]
+                    sed_template = sed.components[comp][template]
+                    dat_sed.append(norm * sed_template)#/(1+dat.z))
+            dat_sed = np.sum(np.stack(dat_sed),axis=0)
+            dat_wave = sed.domain['wavelength']['wave']
 
-        olf.rebuild_source_sed(sed,data.iloc[0])
+        
+        olf.rebuild_source_sed(sed,data.iloc[1])
         #olf.differential_number_counts(temp_data.mag_i,temp_data.abs_mag_i,temp_data.z,temp_data.detected_single_i, eff_area)
         #olf.cumulative_number_counts(temp_data.mag_i,temp_data.abs_mag_i,temp_data.z,temp_data.detected_single_i, eff_area)
 

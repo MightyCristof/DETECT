@@ -471,6 +471,8 @@ def process_source(source):
         'luminosity': source.luminosity,
         # Unpack source fluxes
         **{f"flux_{band}": value for band, value in source.flux.items()},
+        # Unpack source rest fluxes
+        **{f"rest_flux_{band}": value for band, value in source.flux.items()},
         # Unpack source magnitudes
         **{f"mag_{band}": value for band, value in source.mag.items()},
         # Unpack source absolute magnitudes

@@ -1,6 +1,8 @@
 # scripts/luminosity_functions
-from scripts.common import const, np, u
+from scripts.common import const, np, pd, u
 #import resources.parameters as params
+from scripts.global_variables import bp
+from scripts.global_variables import cosmo
 
 
 import pdb
@@ -285,13 +287,17 @@ class ObservedLuminosityFunction:
     def set_survey_flux_limits(self, flux0_limits):
         #flux_limit0 = {key: self.convert_mag_to_flx(self.depths[key]) for key in self.depths}
         flux_limits = {mode: {} for mode in flux0_limits}
-        distance_ratio = (self.dluminosity/self.dluminosity[0]).value**2
+        # The distance ratio might not be right...
+        #dl_ratio = (self.dluminosity/3.08567758e+19).value**2             # z=0
+        #dl_ratio = (self.dluminosity/1.3215183830917299e+20).value**2     # z=1e-8 minimum for some calculations
+        dl_ratio = (self.dluminosity/self.dluminosity[0]).value**2
 
         for mode in flux0_limits:
             for filt, flux0 in flux0_limits[mode].items():
-                flux_limits[mode][filt] = flux0 * distance_ratio        
+                flux_limits[mode][filt] = flux0 * dl_ratio        
         #flux_limit = {mode: {filt: flux * distance_ratio for filt, flux in flux0_limits[mode].items()}
         #              for mode in flux0_limits}
+        pdb.set_trace()
         return flux_limits
     
     def differential_number_counts(self, mags, abs_mags, z, detect, area):
@@ -326,7 +332,7 @@ class ObservedLuminosityFunction:
         plt.ylabel(r'N($i$) [deg$^{-2}$ 0.25 mag$^{-1}$]')
         plt.xlabel(r'$i$')
         plt.legend()
-        plt.show()    
+        plt.show()
     
     def cumulative_number_counts(self, mags, abs_mags, z, detect, area, outline=False):
         import matplotlib.pyplot as plt
@@ -364,30 +370,60 @@ class ObservedLuminosityFunction:
         plt.legend()
         plt.show()    
 
-    def rebuild_source_sed(self, sed, src):
-        # Build wave/freq domain
-        olf = self
-        z = np.concatenate((np.array([0.]),olf.z))#self.z))
-        wave = np.outer(sed.domain['wavelength']['wave'],1+z)
-        
-        # Build SED
-        #src_sed = np.zeros(wave.shape[0])
-        #src_sed = []
-        #for comp in src.components:
-        #    if comp in sed.components.keys():
+    def rebuild_source_sed(self, sed, src):        
+        # Build source observed SED
         src_sed = []
         for comp in src.components:
             for template in sed.components[comp]:
                 key = f"{comp}_{template}_norm"
                 norm = src[key]
                 sed_template = sed.components[comp][template]
-                src_sed.append(norm * sed_template)
-        src_sed = np.sum(np.stack(src_sed),axis=0)
-        pdb.set_trace()
-
+                src_sed.append(norm * sed_template/(1+src.z))
         # OK, from here src_sed is the same as src.sed in the observed frame
-        # now you can:
+        src_sed = np.sum(np.stack(src_sed),axis=0)
+
+        # Build wave/freq domain from observed to rest
+        # Build redshift array from 0 to source redshift
+        # THIS MIGHT NOT WORK, THINK ABOUT "IS IT IN THIS REDSHIFT BIN"
+        # NEEDS TO GO FARTHER. HOW TO DO CLEVER CUTTOFF?]
+        # NOTE: you are adding z==0 into the mix
+        #zarr = np.concatenate((np.array([0]),self.z[:iz+1]))
+        zarr = np.concatenate((np.array([0]),self.z))
+        iz = np.abs(zarr-src.z).argmin()
+        # This creates a wavelength array that is build restframe OUT
+        # Problem is, the src_sed is in observed frame at z=0
+        # So this is essentially backwards to how we're doing it
+        # I need to flip the indices
+        # in this scheme, rest_wave[:,0] =close enough= obsv_wave[:,iz]
+        # for now we'll go with observed wave building out to rest
+        #rest_wave = np.outer(sed.domain['wavelength']['wave'],1+zarr)
+        #obsv_wave = np.outer(sed.domain['wavelength']['wave']*(1+src.z),(1+zarr)**-1)
+        zsed = np.outer(src_sed,1+zarr)
+        wave = np.outer(sed.domain['wavelength']['wave']*(1+src.z),(1+zarr)**-1)
         # create the sed array that exists at each redshift from observed to rest
+
+        zflx = []
+        for i in range(len(zarr)):
+            zflx.append(bp.convolve_with_bandpass(wave[:,i],zsed[:,i]))
+        zflx = pd.DataFrame(zflx)
+
+        import matplotlib.pyplot as plt
+        colors = ['violet','dodgerblue','green','yellow','orange','red']
+        labels = zflx.columns.tolist()
+        for i, filt in enumerate(self.flux_limits['single'].items()):
+            plt.plot(self.z,filt[1],colors[i],linestyle='--',label=labels[i]+' flux limit')
+        plt.axvline(x=src.z,color='black',label='Redshift',zorder=0)
+        for i in range(zflx.columns.size):
+            plt.scatter(zarr,zflx.iloc[:,i],marker='.',color=colors[i],alpha=0.5,label=labels[i])
+        plt.yscale('log')
+        plt.xlabel(r'$z$')
+        plt.ylabel(r'$F_{\nu}$ [erg s$^{-1}$ cm$^{-2}$ Hz$^{-1}$]')
+        plt.legend()
+        plt.show()
+
+        # OK this doesn't match the survey flux limits, so there must be an issue with how i'm creating olf.flux_limits
+
+        pdb.set_trace()
         # then convolved to get the fluxes
         # filts = []
         # filts.append(bp.convolve_with_bandpass(wave[:,i],dat_sed[:,i]))
